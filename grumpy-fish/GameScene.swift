@@ -11,79 +11,121 @@ import GameplayKit
 
 class GameScene: SKScene {
     
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
+    // obstacle arrays
+    var bottomTextures = ["rock1", "rock2", "rock3", "rock4", "rock5", "rock6", "rock7", "column1"]
+    var topTextures = ["coral1", "coral2", "coral3", "coral4", "coral5", "coral6"]
+    
+    // game objects
+    var oceanFloor: SKSpriteNode!
+    var oceanFloor2: SKSpriteNode!
+    var fish: SKSpriteNode?
+    var bottomObstacle: SKSpriteNode?
+    var topObstacle: SKSpriteNode?
+    
+    // time intervals to randomize obstacles
+    var bottomObstacleInterval: TimeInterval = 4
+    var timeSinceBottomObstacleCreated: TimeInterval = 0
+    var previousTime: TimeInterval = 0
+    
+    var topObstacleInterval: TimeInterval = 3.5
+    var timeSinceTopObstacleCreated: TimeInterval = 0
+    
+    
+    
     
     override func didMove(to view: SKView) {
         
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
+        oceanFloor = (self.childNode(withName: "oceanFloor") as? SKSpriteNode)!
+        oceanFloor2 = (self.childNode(withName: "oceanFloor2") as? SKSpriteNode)!
+        
+        fish = self.childNode(withName: "fish") as? SKSpriteNode
+        
+        // add cycled movement to ocean floor
+        let oceanMovement = SKAction.move(by:  CGVector(dx: -oceanFloor.size.width, dy: 0), duration: 10)
+        let oceanReset = SKAction.move(by: CGVector(dx: oceanFloor.size.width, dy: 0), duration: 0)
+        let oceanSequence = SKAction.repeatForever(SKAction.sequence([oceanMovement, oceanReset]))
+        oceanFloor.run(oceanSequence)
+        oceanFloor2.run(oceanSequence)
+ 
+    }
+    
+    // MARK: Create top and bottom obstacles randomly
+    
+    func addBottomObstacle(_ frameRate: TimeInterval) {
+        
+        timeSinceBottomObstacleCreated += frameRate
+        if timeSinceBottomObstacleCreated < bottomObstacleInterval {
+            return
         }
         
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
+        // create node from one of the textures
+        let randomTexture = Int(arc4random_uniform(UInt32(bottomTextures.count)))
+        let bottomTexture = SKTexture(imageNamed: bottomTextures[randomTexture])
+        bottomObstacle = SKSpriteNode(texture: bottomTexture, size: bottomTexture.size())
+        bottomObstacle?.position = CGPoint(x: self.frame.width + (bottomObstacle?.size.width)!, y: bottomTexture.size().height / 2 - 10)
+        bottomObstacle?.physicsBody = SKPhysicsBody(texture: bottomTexture, size: bottomTexture.size())
+        bottomObstacle?.physicsBody?.isDynamic = false
+        bottomObstacle?.physicsBody?.affectedByGravity = false
+        bottomObstacle?.zPosition = 1
+        let bottomObstacleMovement = SKAction.move(by: CGVector(dx: -self.frame.width * 2, dy: 0), duration: 12)
+        bottomObstacle?.run(bottomObstacleMovement)
+        self.addChild(bottomObstacle!)
         
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
+        // remove node after time period for optimization
+        let waitAction = SKAction.wait(forDuration: 13)
+        let removeFromParent = SKAction.removeFromParent()
+        bottomObstacle?.run(SKAction.sequence([waitAction, removeFromParent]))
+        
+        // update time since the last obstacle created
+        timeSinceBottomObstacleCreated = drand48()
     }
     
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
+    func addTopObstacle(_ frameRate: TimeInterval) {
+        
+        timeSinceTopObstacleCreated += frameRate
+        if timeSinceTopObstacleCreated < topObstacleInterval {
+            return
         }
+        
+        // create node from one of the textures
+        let randomTexture = Int(arc4random_uniform(UInt32(topTextures.count)))
+        let topTexture = SKTexture(imageNamed: topTextures[randomTexture])
+        topObstacle = SKSpriteNode(texture: topTexture, size: topTexture.size())
+        topObstacle?.position = CGPoint(x: self.frame.width + (topObstacle?.size.width)!, y: self.frame.height - (topObstacle?.size.height)! / 2) // check this
+        topObstacle?.physicsBody = SKPhysicsBody(texture: topTexture, size: topTexture.size())
+        topObstacle?.physicsBody?.isDynamic = false
+        topObstacle?.physicsBody?.affectedByGravity = false
+        topObstacle?.zPosition = 2
+        
+        // move obstacle and remove node after time period for optimization
+        let topObstacleMovement = SKAction.move(by: CGVector(dx: -self.frame.width * 2, dy: 0), duration: 12.5)
+        let waitAction = SKAction.wait(forDuration: 13)
+        let removeFromParent = SKAction.removeFromParent()
+        self.addChild(topObstacle!)
+        topObstacle?.run(SKAction.sequence([topObstacleMovement, waitAction, removeFromParent]))
+        
+        
+        // update time since the last obstacle created
+        timeSinceTopObstacleCreated = drand48()
+
     }
     
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
-    }
+    // MARK: Touches began
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
         
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
+        fish?.physicsBody?.isDynamic = true
+        fish?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 50))
+
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
-    }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
+    // MARK: Update
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+        addBottomObstacle(currentTime - previousTime)
+        addTopObstacle(currentTime - previousTime)
+        previousTime = currentTime
     }
 }

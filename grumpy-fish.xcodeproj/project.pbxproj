@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1338D5C0203FF183009A412F /* StartScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1338D5BF203FF183009A412F /* StartScene.sks */; };
+		1338D5C3203FF1C9009A412F /* StartScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1338D5C2203FF1C9009A412F /* StartScene.swift */; };
 		135AA4A4203B5FBF00DEB6BF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135AA4A3203B5FBF00DEB6BF /* AppDelegate.swift */; };
 		135AA4A6203B5FBF00DEB6BF /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 135AA4A5203B5FBF00DEB6BF /* GameScene.sks */; };
 		135AA4AA203B5FBF00DEB6BF /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135AA4A9203B5FBF00DEB6BF /* GameScene.swift */; };
@@ -14,9 +16,12 @@
 		135AA4AF203B5FBF00DEB6BF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 135AA4AD203B5FBF00DEB6BF /* Main.storyboard */; };
 		135AA4B1203B5FBF00DEB6BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 135AA4B0203B5FBF00DEB6BF /* Assets.xcassets */; };
 		135AA4B4203B5FBF00DEB6BF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 135AA4B2203B5FBF00DEB6BF /* LaunchScreen.storyboard */; };
+		137CBC8C203FF44E004517FE /* 04B.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 137CBC8B203FF44E004517FE /* 04B.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1338D5BF203FF183009A412F /* StartScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = StartScene.sks; sourceTree = "<group>"; };
+		1338D5C2203FF1C9009A412F /* StartScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartScene.swift; sourceTree = "<group>"; };
 		135AA4A0203B5FBF00DEB6BF /* grumpy-fish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "grumpy-fish.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		135AA4A3203B5FBF00DEB6BF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		135AA4A5203B5FBF00DEB6BF /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -26,6 +31,7 @@
 		135AA4B0203B5FBF00DEB6BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		135AA4B3203B5FBF00DEB6BF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		135AA4B5203B5FBF00DEB6BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		137CBC8B203FF44E004517FE /* 04B.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = 04B.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +45,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1338D5C1203FF191009A412F /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				135AA4A5203B5FBF00DEB6BF /* GameScene.sks */,
+				1338D5BF203FF183009A412F /* StartScene.sks */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
 		135AA497203B5FBF00DEB6BF = {
 			isa = PBXGroup;
 			children = (
@@ -59,12 +74,14 @@
 			isa = PBXGroup;
 			children = (
 				135AA4A3203B5FBF00DEB6BF /* AppDelegate.swift */,
-				135AA4A5203B5FBF00DEB6BF /* GameScene.sks */,
+				1338D5C1203FF191009A412F /* Scenes */,
 				135AA4A9203B5FBF00DEB6BF /* GameScene.swift */,
+				1338D5C2203FF1C9009A412F /* StartScene.swift */,
 				135AA4AB203B5FBF00DEB6BF /* GameViewController.swift */,
 				135AA4AD203B5FBF00DEB6BF /* Main.storyboard */,
 				135AA4B0203B5FBF00DEB6BF /* Assets.xcassets */,
 				135AA4B2203B5FBF00DEB6BF /* LaunchScreen.storyboard */,
+				137CBC8B203FF44E004517FE /* 04B.ttf */,
 				135AA4B5203B5FBF00DEB6BF /* Info.plist */,
 			);
 			path = "grumpy-fish";
@@ -132,6 +149,8 @@
 				135AA4AF203B5FBF00DEB6BF /* Main.storyboard in Resources */,
 				135AA4A6203B5FBF00DEB6BF /* GameScene.sks in Resources */,
 				135AA4B1203B5FBF00DEB6BF /* Assets.xcassets in Resources */,
+				137CBC8C203FF44E004517FE /* 04B.ttf in Resources */,
+				1338D5C0203FF183009A412F /* StartScene.sks in Resources */,
 				135AA4B4203B5FBF00DEB6BF /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -146,6 +165,7 @@
 				135AA4AA203B5FBF00DEB6BF /* GameScene.swift in Sources */,
 				135AA4AC203B5FBF00DEB6BF /* GameViewController.swift in Sources */,
 				135AA4A4203B5FBF00DEB6BF /* AppDelegate.swift in Sources */,
+				1338D5C3203FF1C9009A412F /* StartScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

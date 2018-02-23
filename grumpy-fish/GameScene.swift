@@ -11,6 +11,8 @@ import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    // MARK: -- GAME VARIABLES --
+    
     // obstacle arrays
     var bottomTextures = ["rock1", "rock2", "rock3", "rock4", "rock5", "rock6", "rock7"]
     var topTextures = ["coral1", "coral2", "coral3", "coral4", "coral5", "coral6"]
@@ -18,13 +20,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // game objects
     var scoreLabel: SKLabelNode!
+    var gameOverLabel: SKLabelNode!
     var oceanFloor: SKSpriteNode!
     var oceanFloor2: SKSpriteNode!
     var fish: SKSpriteNode?
     var bottomObstacle: SKSpriteNode?
     var topObstacle: SKSpriteNode?
     var item: SKSpriteNode?
-    var score = 100
+    var score = 20
     var collided = false
     
     // time intervals to slightly randomize obstacles
@@ -43,6 +46,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var obstacleCategory: UInt32 = 0b1 << 1
     var itemCategory: UInt32 = 0b1 << 2
     
+    // MARK: -- SCENE START --
     
     override func didMove(to view: SKView) {
         
@@ -52,6 +56,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // add nodes
         
         scoreLabel = self.childNode(withName: "scoreLabel") as? SKLabelNode
+        scoreLabel.text = String(score)
+        scoreLabel.position = CGPoint(x: self.frame.width * 0.2, y: self.frame.height * 0.8)
         
         oceanFloor = (self.childNode(withName: "oceanFloor") as? SKSpriteNode)!
         oceanFloor2 = (self.childNode(withName: "oceanFloor2") as? SKSpriteNode)!
@@ -69,7 +75,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
  
     }
     
-    // MARK: Create items, top and bottom obstacles randomly
+    // MARK: -- GENERATE GAME OBJESTS --
+    // Create items, top and bottom obstacles randomly
     
     func addBottomObstacle(_ frameRate: TimeInterval) {
         
@@ -149,6 +156,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
         
         item?.physicsBody = SKPhysicsBody(texture: itemTexture, size: itemTexture.size())
+        item?.physicsBody?.linearDamping = 0
         item?.physicsBody?.isDynamic = false
         item?.physicsBody?.affectedByGravity = false
         item?.physicsBody?.categoryBitMask = itemCategory
@@ -168,12 +176,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+   
     
     
-    
-    
-    
-    // MARK: Respond to contacts and check if player collided with item or obstacle
+    // MARK: -- COLLISION HANDLING --
+    // Respond to contacts and check if player collided with item or obstacle
     
     func didBegin(_ contact: SKPhysicsContact) {
         
@@ -186,7 +193,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 score += 10
             }
             else if otherNode.physicsBody?.categoryBitMask == obstacleCategory {
-                score -= 10
+                score -= 20
                 otherNode.physicsBody?.categoryBitMask = noCategory
             }
             scoreLabel.text = String(score)
@@ -195,23 +202,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
 
     
-    // MARK: Touches began - start playing only after touching screen
+    // MARK: -- RESPOND TO TOUCH --
+    // Touches began - start playing only after touching screen
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        fish?.physicsBody?.isDynamic = true
-        fish?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 30))
 
+        if fish?.parent == nil {
+            let startScene = StartScene(fileNamed: "StartScene")
+            startScene?.scaleMode = .aspectFill
+            view?.presentScene(startScene)
+        } else {
+            fish?.physicsBody?.isDynamic = true
+            fish?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 30))
+        }
+        
     }
     
     
-    // MARK: Update
+    // MARK: -- CHECK SCORE --
+    // Check score and end game if lower than 0
+    
+    func checkScore() {
+        if score <= 0 {
+            fish?.removeFromParent()
+            gameOverLabel = childNode(withName: "gameOverLabel") as! SKLabelNode
+            gameOverLabel.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        } else {
+            return
+        }
+    }
+    
+    
+    // MARK: -- Update --
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         addBottomObstacle(currentTime - previousTime)
         addTopObstacle(currentTime - previousTime)
         addItem(currentTime - previousTime)
+        checkScore()
         previousTime = currentTime
     }
 }

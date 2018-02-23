@@ -14,6 +14,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // obstacle arrays
     var bottomTextures = ["rock1", "rock2", "rock3", "rock4", "rock5", "rock6", "rock7"]
     var topTextures = ["coral1", "coral2", "coral3", "coral4", "coral5", "coral6"]
+    var itemTextures = ["starfish1", "starfish2", "starfish3"]
     
     // game objects
     var scoreLabel: SKLabelNode!
@@ -22,6 +23,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var fish: SKSpriteNode?
     var bottomObstacle: SKSpriteNode?
     var topObstacle: SKSpriteNode?
+    var item: SKSpriteNode?
     var score = 100
     var collided = false
     
@@ -30,6 +32,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var timeSinceBottomObstacleCreated: TimeInterval = 0
     var topObstacleInterval: TimeInterval = 3.5
     var timeSinceTopObstacleCreated: TimeInterval = 0
+    var itemTimeInterval: TimeInterval = 2.5
+    var timeSinceItemCreated: TimeInterval = 0
     var previousTime: TimeInterval = 0
     
     // categories for collisions
@@ -65,7 +69,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
  
     }
     
-    // MARK: Create top and bottom obstacles randomly
+    // MARK: Create items, top and bottom obstacles randomly
     
     func addBottomObstacle(_ frameRate: TimeInterval) {
         
@@ -85,7 +89,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bottomObstacle?.physicsBody?.categoryBitMask = obstacleCategory
         bottomObstacle?.physicsBody?.contactTestBitMask = playerCategory
         bottomObstacle?.zPosition = 2
-        let bottomObstacleMovement = SKAction.move(by: CGVector(dx: -self.frame.width * 2, dy: 0), duration: 12)
+        let bottomObstacleMovement = SKAction.move(by: CGVector(dx: -self.frame.width * 2, dy: 0), duration: 12 - drand48())
         bottomObstacle?.run(bottomObstacleMovement)
         self.addChild(bottomObstacle!)
         
@@ -105,7 +109,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
         
-        // create node from one of the textures
+        // create node from one of the textures in the array
         let randomTexture = Int(arc4random_uniform(UInt32(topTextures.count)))
         let topTexture = SKTexture(imageNamed: topTextures[randomTexture])
         topObstacle = SKSpriteNode(texture: topTexture, size: topTexture.size())
@@ -118,7 +122,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         topObstacle?.zPosition = 2
         
         // move obstacle and remove node after time period for optimization
-        let topObstacleMovement = SKAction.move(by: CGVector(dx: -self.frame.width * 2, dy: 0), duration: 12.5)
+        let topObstacleMovement = SKAction.move(by: CGVector(dx: -self.frame.width * 2, dy: 0), duration: 12 + drand48())
         let waitAction = SKAction.wait(forDuration: 13)
         let removeFromParent = SKAction.removeFromParent()
         self.addChild(topObstacle!)
@@ -130,36 +134,73 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     }
     
-    // MARK: Respond to contacts
-    
-    func didBegin(_ contact: SKPhysicsContact) {
-        if contact.bodyA.categoryBitMask == playerCategory || contact.bodyB.categoryBitMask == playerCategory {
-            let otherNode: SKNode = ((contact.bodyA.categoryBitMask == playerCategory) ? contact.bodyB.node : contact.bodyA.node)!
-            playerDidCollide(with: otherNode)
+    func addItem(_ frameRate: TimeInterval) {
+        
+        timeSinceItemCreated += frameRate
+        if timeSinceItemCreated < itemTimeInterval {
+            return
         }
+        
+        // create node from one of the textures in the array
+        let randomTexture = Int(arc4random_uniform(UInt32(itemTextures.count)))
+        let itemTexture = SKTexture(imageNamed: itemTextures[randomTexture])
+        item = SKSpriteNode(texture: itemTexture, size: itemTexture.size())
+        item?.position = CGPoint(x: Double(self.frame.width) + Double(itemTexture.size().width), y: Double(self.frame.height) * drand48())
+    
+        
+        item?.physicsBody = SKPhysicsBody(texture: itemTexture, size: itemTexture.size())
+        item?.physicsBody?.isDynamic = false
+        item?.physicsBody?.affectedByGravity = false
+        item?.physicsBody?.categoryBitMask = itemCategory
+        item?.physicsBody?.contactTestBitMask = playerCategory
+        item?.zPosition = 2
+        
+        // move obstacle and remove node after time period for optimization
+        let itemMovement = SKAction.move(by: CGVector(dx: -self.frame.width * 2, dy: 0), duration: 15 + drand48())
+        let waitAction = SKAction.wait(forDuration: 17)
+        let removeFromParent = SKAction.removeFromParent()
+        self.addChild(item!)
+        item?.run(SKAction.sequence([itemMovement, waitAction, removeFromParent]))
+        
+        
+        // update time since the last obstacle created
+        timeSinceItemCreated = drand48()
         
     }
     
     
-    func playerDidCollide(with otherNode: SKNode) {
+    
+    
+    
+    
+    // MARK: Respond to contacts and check if player collided with item or obstacle
+    
+    func didBegin(_ contact: SKPhysicsContact) {
         
+        if contact.bodyA.categoryBitMask == playerCategory || contact.bodyB.categoryBitMask == playerCategory {
+            
+            let otherNode: SKNode = ((contact.bodyA.categoryBitMask == playerCategory) ? contact.bodyB.node : contact.bodyA.node)!
+            
             if otherNode.physicsBody?.categoryBitMask == itemCategory {
                 otherNode.removeFromParent()
                 score += 10
-            } else if otherNode.physicsBody?.categoryBitMask == obstacleCategory {
+            }
+            else if otherNode.physicsBody?.categoryBitMask == obstacleCategory {
                 score -= 10
                 otherNode.physicsBody?.categoryBitMask = noCategory
             }
-        scoreLabel.text = String(score)
+            scoreLabel.text = String(score)
+        }
     }
+    
 
     
-    // MARK: Touches began
+    // MARK: Touches began - start playing only after touching screen
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         fish?.physicsBody?.isDynamic = true
-        fish?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 10))
+        fish?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 30))
 
     }
     
@@ -170,6 +211,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Called before each frame is rendered
         addBottomObstacle(currentTime - previousTime)
         addTopObstacle(currentTime - previousTime)
+        addItem(currentTime - previousTime)
         previousTime = currentTime
     }
 }

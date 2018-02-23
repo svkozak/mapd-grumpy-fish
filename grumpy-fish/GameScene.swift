@@ -27,7 +27,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var bottomObstacle: SKSpriteNode?
     var topObstacle: SKSpriteNode?
     var item: SKSpriteNode?
-    var score = 20
+    var score = 40
     var collided = false
     
     // time intervals to slightly randomize obstacles
@@ -57,7 +57,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         scoreLabel = self.childNode(withName: "scoreLabel") as? SKLabelNode
         scoreLabel.text = String(score)
-        scoreLabel.position = CGPoint(x: self.frame.width * 0.2, y: self.frame.height * 0.8)
+        scoreLabel.position = CGPoint(x: self.frame.width * 0.15, y: self.frame.height * 0.85)
         
         oceanFloor = (self.childNode(withName: "oceanFloor") as? SKSpriteNode)!
         oceanFloor2 = (self.childNode(withName: "oceanFloor2") as? SKSpriteNode)!
@@ -189,11 +189,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let otherNode: SKNode = ((contact.bodyA.categoryBitMask == playerCategory) ? contact.bodyB.node : contact.bodyA.node)!
             
             if otherNode.physicsBody?.categoryBitMask == itemCategory {
+                self.run(SKAction.playSoundFileNamed("zing", waitForCompletion: false))
                 otherNode.removeFromParent()
                 score += 10
             }
             else if otherNode.physicsBody?.categoryBitMask == obstacleCategory {
                 score -= 20
+                self.run(SKAction.playSoundFileNamed("bubble", waitForCompletion: false))
+                let bubbles: SKEmitterNode = SKEmitterNode(fileNamed: "Smoke")!
+                bubbles.position = CGPoint(x: otherNode.frame.midX, y: otherNode.frame.midY)
+                otherNode.addChild(bubbles)
                 otherNode.physicsBody?.categoryBitMask = noCategory
             }
             scoreLabel.text = String(score)
@@ -215,7 +220,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             fish?.physicsBody?.isDynamic = true
             fish?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 30))
         }
-        
     }
     
     
@@ -225,6 +229,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func checkScore() {
         if score <= 0 {
             fish?.removeFromParent()
+            scoreLabel.text = "0"
             gameOverLabel = childNode(withName: "gameOverLabel") as! SKLabelNode
             gameOverLabel.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
         } else {

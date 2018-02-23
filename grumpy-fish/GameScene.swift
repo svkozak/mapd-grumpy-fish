@@ -9,36 +9,52 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // obstacle arrays
-    var bottomTextures = ["rock1", "rock2", "rock3", "rock4", "rock5", "rock6", "rock7", "column1"]
+    var bottomTextures = ["rock1", "rock2", "rock3", "rock4", "rock5", "rock6", "rock7"]
     var topTextures = ["coral1", "coral2", "coral3", "coral4", "coral5", "coral6"]
     
     // game objects
+    var scoreLabel: SKLabelNode!
     var oceanFloor: SKSpriteNode!
     var oceanFloor2: SKSpriteNode!
     var fish: SKSpriteNode?
     var bottomObstacle: SKSpriteNode?
     var topObstacle: SKSpriteNode?
+    var score = 100
+    var collided = false
     
-    // time intervals to randomize obstacles
+    // time intervals to slightly randomize obstacles
     var bottomObstacleInterval: TimeInterval = 4
     var timeSinceBottomObstacleCreated: TimeInterval = 0
-    var previousTime: TimeInterval = 0
-    
     var topObstacleInterval: TimeInterval = 3.5
     var timeSinceTopObstacleCreated: TimeInterval = 0
+    var previousTime: TimeInterval = 0
     
+    // categories for collisions
     
+    var noCategory: UInt32 = 0
+    var playerCategory: UInt32 = 0b1
+    var obstacleCategory: UInt32 = 0b1 << 1
+    var itemCategory: UInt32 = 0b1 << 2
     
     
     override func didMove(to view: SKView) {
+        
+        // set self as delegate to register collisions
+        self.physicsWorld.contactDelegate = self
+        
+        // add nodes
+        
+        scoreLabel = self.childNode(withName: "scoreLabel") as? SKLabelNode
         
         oceanFloor = (self.childNode(withName: "oceanFloor") as? SKSpriteNode)!
         oceanFloor2 = (self.childNode(withName: "oceanFloor2") as? SKSpriteNode)!
         
         fish = self.childNode(withName: "fish") as? SKSpriteNode
+        fish?.physicsBody?.categoryBitMask = playerCategory
+        fish?.physicsBody?.contactTestBitMask = obstacleCategory | itemCategory
         
         // add cycled movement to ocean floor
         let oceanMovement = SKAction.move(by:  CGVector(dx: -oceanFloor.size.width, dy: 0), duration: 10)
@@ -66,7 +82,9 @@ class GameScene: SKScene {
         bottomObstacle?.physicsBody = SKPhysicsBody(texture: bottomTexture, size: bottomTexture.size())
         bottomObstacle?.physicsBody?.isDynamic = false
         bottomObstacle?.physicsBody?.affectedByGravity = false
-        bottomObstacle?.zPosition = 1
+        bottomObstacle?.physicsBody?.categoryBitMask = obstacleCategory
+        bottomObstacle?.physicsBody?.contactTestBitMask = playerCategory
+        bottomObstacle?.zPosition = 2
         let bottomObstacleMovement = SKAction.move(by: CGVector(dx: -self.frame.width * 2, dy: 0), duration: 12)
         bottomObstacle?.run(bottomObstacleMovement)
         self.addChild(bottomObstacle!)
@@ -76,7 +94,7 @@ class GameScene: SKScene {
         let removeFromParent = SKAction.removeFromParent()
         bottomObstacle?.run(SKAction.sequence([waitAction, removeFromParent]))
         
-        // update time since the last obstacle created
+        // update time since the last obstacle created and set a little offset
         timeSinceBottomObstacleCreated = drand48()
     }
     
@@ -95,6 +113,8 @@ class GameScene: SKScene {
         topObstacle?.physicsBody = SKPhysicsBody(texture: topTexture, size: topTexture.size())
         topObstacle?.physicsBody?.isDynamic = false
         topObstacle?.physicsBody?.affectedByGravity = false
+        topObstacle?.physicsBody?.categoryBitMask = obstacleCategory
+        topObstacle?.physicsBody?.contactTestBitMask = playerCategory
         topObstacle?.zPosition = 2
         
         // move obstacle and remove node after time period for optimization
@@ -110,12 +130,36 @@ class GameScene: SKScene {
 
     }
     
+    // MARK: Respond to contacts
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        if contact.bodyA.categoryBitMask == playerCategory || contact.bodyB.categoryBitMask == playerCategory {
+            let otherNode: SKNode = ((contact.bodyA.categoryBitMask == playerCategory) ? contact.bodyB.node : contact.bodyA.node)!
+            playerDidCollide(with: otherNode)
+        }
+        
+    }
+    
+    
+    func playerDidCollide(with otherNode: SKNode) {
+        
+            if otherNode.physicsBody?.categoryBitMask == itemCategory {
+                otherNode.removeFromParent()
+                score += 10
+            } else if otherNode.physicsBody?.categoryBitMask == obstacleCategory {
+                score -= 10
+                otherNode.physicsBody?.categoryBitMask = noCategory
+            }
+        scoreLabel.text = String(score)
+    }
+
+    
     // MARK: Touches began
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         fish?.physicsBody?.isDynamic = true
-        fish?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 50))
+        fish?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 10))
 
     }
     

@@ -15,20 +15,19 @@ class StartScene: SKScene {
     
     var startButton: SKLabelNode!
     var settingsButton: SKLabelNode!
+    var musicButton: SKLabelNode!
     var highScoreLabel: SKLabelNode!
     var oceanFloor: SKSpriteNode!
     var oceanFloor2: SKSpriteNode!
     var musicPlaylist: [String] = ["1asteroid", "2ugol", "3look", "4pair", "5crash"]
-    var musicOn = UserDefaults().bool(forKey: "music")
     var highscore = UserDefaults().integer(forKey: "highscore")
+    var musicOn = UserDefaults().bool(forKey: "music")
     
     
     override func didMove(to view: SKView) {
         
-        self.userData = NSMutableDictionary()
-        self.userData?.setValue(false, forKey: "music")
-        
         startButton = childNode(withName: "startGame") as! SKLabelNode
+        musicButton = childNode(withName: "musicButton") as! SKLabelNode
         highScoreLabel = childNode(withName: "highScoreLabel") as! SKLabelNode
         highScoreLabel.text = "high score: \(highscore)"
         
@@ -42,21 +41,20 @@ class StartScene: SKScene {
         oceanFloor.run(oceanSequence)
         oceanFloor2.run(oceanSequence)
         
-        // add background music randomly from playlist (to fix later)
-//        if musicOn == true {
-//            let bgMusic = SKAudioNode(fileNamed: musicPlaylist[Int(arc4random_uniform(UInt32(musicPlaylist.count)))])
-//            bgMusic.autoplayLooped = true
-//            self.addChild(bgMusic)
-//        }
-        
+        // Add background music randomly from the array and play
+        let bgMusic = SKAudioNode(fileNamed: musicPlaylist[Int(arc4random_uniform(UInt32(musicPlaylist.count)))])
+        bgMusic.autoplayLooped = true
+        self.addChild(bgMusic)
     }
     
+    // MARK: -- NAVIGATION BUTTONS --
+    // check which label was clicked and present the next scene accordingly
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        // check which label was clicked and present the next scene accordingly
+
         for touch in touches {
             let location = touch.location(in: self)
+            
             if atPoint(location).name == "startGame" {
                 startButton.fontColor = UIColor.yellow
                 if let gameScene = GameScene(fileNamed: "GameScene") {
@@ -69,13 +67,12 @@ class StartScene: SKScene {
                 settingsScene?.scaleMode = .aspectFill
                 view?.presentScene(settingsScene)
             }
+            else if atPoint(location).name == "musicButton" {
+                // music button should work here
+            }
         }
     }
     
-    override func update(_ currentTime: TimeInterval) {
-        
-    }
-    
-  
+
 
 }

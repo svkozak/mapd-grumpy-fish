@@ -18,8 +18,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var topTextures = ["coral1", "coral2", "coral3", "coral4", "coral5", "coral6"]
     var itemTextures = ["starfish1", "starfish2", "starfish3"]
     
-    // game objects
+    // game objects and info
     var scoreLabel: SKLabelNode!
+    var highScoreLabel: SKLabelNode!
     var gameOverLabel: SKLabelNode!
     var oceanFloor: SKSpriteNode!
     var oceanFloor2: SKSpriteNode!
@@ -29,6 +30,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var item: SKSpriteNode?
     var score = 40
     var collided = false
+    var highscore = UserDefaults().integer(forKey: "highscore")
     
     // time intervals to slightly randomize obstacles
     var bottomObstacleInterval: TimeInterval = 4
@@ -56,8 +58,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // add nodes
         
         scoreLabel = self.childNode(withName: "scoreLabel") as? SKLabelNode
-        scoreLabel.text = String(score)
+        scoreLabel.text = "you: \(score)"
         scoreLabel.position = CGPoint(x: self.frame.width * 0.15, y: self.frame.height * 0.85)
+        
+        highScoreLabel = self.childNode(withName: "highScoreLabel") as? SKLabelNode
+        highScoreLabel.text = "top: \(highscore)"
         
         oceanFloor = (self.childNode(withName: "oceanFloor") as? SKSpriteNode)!
         oceanFloor2 = (self.childNode(withName: "oceanFloor2") as? SKSpriteNode)!
@@ -229,11 +234,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func checkScore() {
         if score <= 0 {
             fish?.removeFromParent()
-            scoreLabel.text = "0"
+            scoreLabel.text = "you: \(score)"
             gameOverLabel = childNode(withName: "gameOverLabel") as! SKLabelNode
             gameOverLabel.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
-        } else {
-            return
+        } else if score > highscore {
+            UserDefaults().set(score, forKey: "highscore")
+            highscore = UserDefaults().integer(forKey: "highscore")
+            highScoreLabel.text = "top: \(highscore)"
+            
         }
     }
     

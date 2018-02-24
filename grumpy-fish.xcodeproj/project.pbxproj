@@ -28,6 +28,8 @@
 		13CD16412040BEA800837D6C /* bubble.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13CD163F2040BEA800837D6C /* bubble.wav */; };
 		13CD16422040BEA800837D6C /* zing.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13CD16402040BEA800837D6C /* zing.wav */; };
 		13CD16442040C07500837D6C /* hit.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13CD16432040C07500837D6C /* hit.wav */; };
+		13CD16462040C68C00837D6C /* SettingsScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 13CD16452040C68C00837D6C /* SettingsScene.sks */; };
+		13CD16482040C8A000837D6C /* SettingsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13CD16472040C8A000837D6C /* SettingsScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +56,8 @@
 		13CD163F2040BEA800837D6C /* bubble.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bubble.wav; sourceTree = "<group>"; };
 		13CD16402040BEA800837D6C /* zing.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = zing.wav; sourceTree = "<group>"; };
 		13CD16432040C07500837D6C /* hit.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hit.wav; sourceTree = "<group>"; };
+		13CD16452040C68C00837D6C /* SettingsScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SettingsScene.sks; sourceTree = "<group>"; };
+		13CD16472040C8A000837D6C /* SettingsScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SettingsScene.swift; path = "grumpy-fish/SettingsScene.swift"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,11 +74,12 @@
 		1338D5C1203FF191009A412F /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
-				135AA4A5203B5FBF00DEB6BF /* GameScene.sks */,
 				13CD162E2040B2D700837D6C /* Bubbles.sks */,
 				13CD162F2040B2D700837D6C /* Assets.xcassets */,
 				13CD16322040B3C600837D6C /* Smoke.sks */,
+				135AA4A5203B5FBF00DEB6BF /* GameScene.sks */,
 				1338D5BF203FF183009A412F /* StartScene.sks */,
+				13CD16452040C68C00837D6C /* SettingsScene.sks */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -101,6 +106,7 @@
 				13CD16342040BDCB00837D6C /* Music */,
 				135AA4A3203B5FBF00DEB6BF /* AppDelegate.swift */,
 				1338D5C1203FF191009A412F /* Scenes */,
+				13CD16472040C8A000837D6C /* SettingsScene.swift */,
 				135AA4A9203B5FBF00DEB6BF /* GameScene.swift */,
 				1338D5C2203FF1C9009A412F /* StartScene.swift */,
 				135AA4AB203B5FBF00DEB6BF /* GameViewController.swift */,
@@ -196,6 +202,7 @@
 				13CD16302040B2D700837D6C /* Bubbles.sks in Resources */,
 				1338D5C0203FF183009A412F /* StartScene.sks in Resources */,
 				13CD163C2040BDE200837D6C /* 4pair.mp3 in Resources */,
+				13CD16462040C68C00837D6C /* SettingsScene.sks in Resources */,
 				13CD16312040B2D700837D6C /* Assets.xcassets in Resources */,
 				135AA4B4203B5FBF00DEB6BF /* LaunchScreen.storyboard in Resources */,
 				13CD16442040C07500837D6C /* hit.wav in Resources */,
@@ -217,6 +224,7 @@
 				135AA4AA203B5FBF00DEB6BF /* GameScene.swift in Sources */,
 				135AA4AC203B5FBF00DEB6BF /* GameViewController.swift in Sources */,
 				135AA4A4203B5FBF00DEB6BF /* AppDelegate.swift in Sources */,
+				13CD16482040C8A000837D6C /* SettingsScene.swift in Sources */,
 				1338D5C3203FF1C9009A412F /* StartScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

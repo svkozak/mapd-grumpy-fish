@@ -7,3 +7,4 @@ The game has a 'start screen' an 'info screen' with instructions and a 'game ove
 The game features a soundtrack and sound fx that could be turned off. 
 Fish movements are controlled with a single tap.
 
+![Start screen](start.png?raw=true "Start screen")

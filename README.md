@@ -1,11 +1,15 @@
-# Grupmpy Fish SpriteKit game
+# iOS SpriteKit game - Grupmpy Fish
 
-An assignment for MAPD iOS Development - a simple endless side-scrolling game. A fish has to avoid randomly generated obstacles and collect randomly generated food to increase score.
+MAPD iOS Development assignment - a simple endless side-scrolling game. 
 
-The game has a 'start screen' an 'info screen' with instructions and a 'game over' screen. High score is saved in UserDefaults.
-
-The game features a soundtrack and sound fx that could be turned off. 
-Fish movements are controlled with a single tap.
+**Features:**
+* randomly generated obstacles (seaweed, corals and stone columns)
+* randomly generated collectible items (starfish)
+* collision handling (deduct or add points)
+* start screen, game instructions screen, game over screen
+* soundtrack and sound fx
+* high score saved to UserDefaults
+* single tap control
 
 ## Start screen
 
